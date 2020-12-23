@@ -1,0 +1,4 @@
+name: CustomScoreboard
+main: dev.darkdragon.customscoreboard.Main
+version: 1.0
+depend: [Vault]
