@@ -1,0 +1,9 @@
+# This option shows the configured Scoreboard to every player that join.
+# Setting a scoreboard only for a specific rank is not possible for the moment but it's planned for a future update
+show-on-player-join: true
+
+# Current scoreboard file name
+scoreboard-file: "scoreboard" # writing .json is useless (so don't do it) but keep in mind that you must write the file name.
+scoreboard-title: "&d&kiii &r&b&lScoreboard &d&kiii" #You can use minecraft's and essentials' color format (§0 = &0 = black)
+scoreboard-size: 20 # Max size is 32
+scoreboard-refresh-rate: 10 # How many seconds between every scoreboard refresh (in case you have modules set e.g {money})
