@@ -1,4 +1,9 @@
 name: CustomScoreboard
 main: dev.darkdragon.customscoreboard.Main
-version: 1.0
-depend: [Vault]
+version: 1.0-SNAPSHOT
+softdepend: [Vault]
+load: STARTUP
+prefix: CustomScoreboard
+api-version: "1.13"
+author: DarkDragon
+description: This plugin allows you to set custom scoreboards
