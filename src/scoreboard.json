@@ -1,0 +1,30 @@
+[
+  {
+    "text": "&6&lWELCOME, {displayname}",
+    "align": "center"
+  },
+  {
+    "text": "&a{onlineplayers}/{maxplayers} Players",
+    "align": "center"
+  },
+  {
+    "text": "&4&oRight align won't",
+    "align": "right"
+  },
+  {
+    "text": "&4&oWork fine :(",
+    "align": "right"
+  },
+  {
+    "text": "",
+    "align": "center"
+  },
+  {
+    "text": "&eRead plugin's page",
+    "align": "left"
+  },
+  {
+    "text": "",
+    "align": "center"
+  }
+]
