@@ -1,6 +1,6 @@
 <component name="ArtifactManager">
   <artifact type="jar" name="customscoreboard">
-    <output-path>$USER_HOME$/OneDrive/Escritorio/Server Minecraft/plugins</output-path>
+    <output-path>H:/SpigotServ/plugins</output-path>
     <root id="archive" name="customscoreboard.jar">
       <element id="module-output" name="CustomScoreboard" />
     </root>
