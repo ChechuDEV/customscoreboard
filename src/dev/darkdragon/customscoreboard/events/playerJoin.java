@@ -119,8 +119,8 @@ public class playerJoin implements Listener {
                 .replaceAll("\\{onlineplayers}", String.valueOf(plugin.getServer().getOnlinePlayers().size()))
                 .replaceAll("\\{maxplayers}", String.valueOf(plugin.getServer().getMaxPlayers()))
                 .replaceAll("\\{displayname}", player.getDisplayName() );
-        if ( plugin.getServer().getPluginManager().getPlugin("Vault") != null ) {
-            text = text.replaceAll("\\{money}",String.valueOf(Math.round(Main.getEconomy().getBalance(player) * 100.0) / 100.0));
+        if ( /*plugin.getServer().getPluginManager().getPlugin("Vault") != null*/ false) {
+            //text = text.replaceAll("\\{money}",String.valueOf(Math.round(Main.getEconomy().getBalance(player) * 100.0) / 100.0));
         } else {
             text = text.replaceAll("\\{money}", "§4error");
         }

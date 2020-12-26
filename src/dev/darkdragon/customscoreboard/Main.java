@@ -14,16 +14,14 @@ import java.nio.file.Files;
 
 public class Main extends JavaPlugin {
     private Economy economy;
-    private static Economy econ;
+    private Economy econ;
     @Override
     public void onEnable() {
 
         sendConsole("This plugin has been made by me, DarkDragon, please share and rate this plugin in it's Spigot page and join my discord server (discord.darkdragon.dev).");
 
-        if (!setupVault()) {
-            sendConsole("Can't manage to get Vault plugin (economy, chat...) , perhaps it is not installed");
-        }else if(!setupEconomy()) {
-            sendConsole("Can't manage to get Economy working.");
+        if(!setupEconomy()) {
+            sendConsole(ChatColor.DARK_RED + "Can't manage to get Economy working, perhaps Vault is not installed.");
         }
 
 
@@ -66,21 +64,20 @@ public class Main extends JavaPlugin {
         super.onDisable();
     }
 
-    private boolean setupVault() {
-        return Bukkit.getPluginManager().getPlugin("Vault") != null;
-    }
-
     private boolean setupEconomy() {
-        RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
-        if ( rsp == null ) {
+        if (Bukkit.getPluginManager().getPlugin("Vault") == null) {
             return false;
         }
-        economy = rsp.getProvider();
-        econ = economy;
-        return economy != null;
+
+        RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
+        if (rsp == null) {
+            return false;
+        }
+        econ = rsp.getProvider();
+        return econ != null;
     }
 
-    public static Economy getEconomy() {
+    public Economy getEconomy() {
         return econ;
     }
 

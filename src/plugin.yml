@@ -2,7 +2,7 @@ name: CustomScoreboard
 main: dev.darkdragon.customscoreboard.Main
 version: 1.0-SNAPSHOT
 softdepend: [Vault]
-load: STARTUP
+load: POSTWORLD
 prefix: CustomScoreboard
 api-version: "1.13"
 author: DarkDragon
