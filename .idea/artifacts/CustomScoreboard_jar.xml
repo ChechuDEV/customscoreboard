@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="CustomScoreboard:jar">
+    <output-path>H:/tse/plugins</output-path>
+    <root id="archive" name="CustomScoreboard.jar">
+      <element id="module-output" name="CustomScoreboard" />
+      <element id="library" level="project" name="Vault (1)" />
+    </root>
+  </artifact>
+</component>
