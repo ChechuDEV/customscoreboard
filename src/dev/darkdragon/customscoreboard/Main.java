@@ -13,17 +13,12 @@ import java.io.InputStream;
 import java.nio.file.Files;
 
 public class Main extends JavaPlugin {
-    private Economy economy;
-    private Economy econ;
+    private static Economy econ;
+    private static boolean economyOn = true;
     @Override
     public void onEnable() {
 
         sendConsole("This plugin has been made by me, DarkDragon, please share and rate this plugin in it's Spigot page and join my discord server (discord.darkdragon.dev).");
-
-        if(!setupEconomy()) {
-            sendConsole(ChatColor.DARK_RED + "Can't manage to get Economy working, perhaps Vault is not installed.");
-        }
-
 
         InputStream configIS = getResource("config.yml");
         InputStream scoreboardIs = getResource("scoreboard.json");
@@ -51,8 +46,14 @@ public class Main extends JavaPlugin {
                 e.printStackTrace();
             }
         }
+
+        if(!setupEconomy()) {
+            economyOn = false;
+            sendConsole(ChatColor.DARK_RED + "Can't manage to get Economy working, perhaps Vault is not installed.");
+        }
+
         Bukkit.getPluginManager().registerEvents(new playerJoin(this), this);
-        
+
         super.onEnable();
     }
 
@@ -77,10 +78,13 @@ public class Main extends JavaPlugin {
         return econ != null;
     }
 
-    public Economy getEconomy() {
+    public static Economy getEconomy() {
         return econ;
     }
 
+    public static boolean isEconomyOn() {
+        return economyOn;
+    }
 
 
     private void sendConsole(String message) {
