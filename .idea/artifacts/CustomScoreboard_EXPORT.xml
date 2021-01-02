@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="CustomScoreboard EXPORT">
+    <output-path>$USER_HOME$/OneDrive/Documents/Exports</output-path>
+    <root id="archive" name="CustomScoreboard EXPORT.jar">
+      <element id="module-output" name="CustomScoreboard" />
+    </root>
+  </artifact>
+</component>
