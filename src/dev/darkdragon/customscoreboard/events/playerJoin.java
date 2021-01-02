@@ -14,19 +14,22 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scoreboard.*;
+import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Scoreboard;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class playerJoin implements Listener {
-    Plugin plugin;
-    Thread scoreboard;
+    private static Plugin plugin;
 
-    List<PlayerScoreboardsObj> playerScoreboardsObjs = new ArrayList<>();
+    public static List<PlayerScoreboardsObj> playerScoreboardsObjs = new ArrayList<>();
 
     public playerJoin(Main main) {
         plugin = main;
@@ -35,90 +38,87 @@ public class playerJoin implements Listener {
     @EventHandler
     private void onPlayerJoin(PlayerJoinEvent e){
         Player player = e.getPlayer();
-        if(plugin.getConfig().getBoolean("show-on-player-join")) {
-
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    boolean set = playerScoreboardsObjs.stream().anyMatch(playerScoreboardsObj -> playerScoreboardsObj.getPlayer() == player);
-                    boolean updatable = false;
-                    PlayerScoreboardsObj playerObj = null;
-                    if (set) {
-                        updatable = playerScoreboardsObjs.stream().anyMatch(playerScoreboardsObj -> playerScoreboardsObj.getPlayer() == player && playerScoreboardsObj.isUpdatable());
-                        playerObj = playerScoreboardsObjs.stream().filter(playerScoreboardsObj -> player.equals(playerScoreboardsObj.getPlayer())).findFirst().orElse(null);
-                    }
-                    List<String> newLines = new ArrayList<>();
-                    Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
-
-                    Objective obj = scoreboard.registerNewObjective("scoreboard","dummy", plugin.getConfig().getString("scoreboard-title").replaceAll("&","§"));
-                    obj.setDisplaySlot(DisplaySlot.SIDEBAR);
-                    AtomicBoolean isUpdatable = new AtomicBoolean(false);
-                    AtomicBoolean update = new AtomicBoolean(false);
-                    try {
-                        Reader reader = Files.newBufferedReader(Paths.get(plugin.getDataFolder().toString(),"Scoreboards", plugin.getConfig().getString("scoreboard-file") + ".json"));
-
-                        List<ScoreboardObj> scoreboardObjList = new Gson().fromJson(reader, new TypeToken<List<ScoreboardObj>>() {}.getType());
-
-                        if (scoreboardObjList.size() == 16) sendConsole(ChatColor.RED + "Max lines of 16 reached");
-                        boolean finalUpdatable = updatable;
-                        PlayerScoreboardsObj finalPlayerObj = playerObj;
-                        scoreboardObjList.forEach(scoreboardObj -> {
-                            if (scoreboardObj.getText().equals("")) {
-                                String text = StringUtils.repeat(" ",scoreboardObjList.indexOf(scoreboardObj));
-                                obj.getScore(text).setScore(scoreboardObjList.size() - scoreboardObjList.indexOf(scoreboardObj) - 1);
-                                newLines.add(text);
-
-                            } else {
-                                String text = scoreboardObj.getText();
-                                int maxSize = plugin.getConfig().getInt("scoreboard-size");
-
-                                String line = getLine(text, scoreboardObj.getAlign(), maxSize, player);
-                                newLines.add(line);
-                                if(text.contains("{money}")) {
-                                    isUpdatable.set(true);
-                                }
-                                if(text.contains("{onlineplayers}")) {
-                                    isUpdatable.set(true);
-                                }
-                                if(text.contains("{maxplayers}")) {
-                                    isUpdatable.set(true);
-                                }
-                                if(finalUpdatable) { if(!line.equals(finalPlayerObj.getLines().get(scoreboardObjList.indexOf(scoreboardObj))))
-                                    update.set(true);
-                                }
-                                obj.getScore(line).setScore(scoreboardObjList.size() - scoreboardObjList.indexOf(scoreboardObj) - 1);
-
-                            }
-                        });
-
-                        if (set && updatable && update.get()) player.setScoreboard(scoreboard);
-                        if (!set) player.setScoreboard(scoreboard);
-                        reader.close();
-
-                        if(!set) playerScoreboardsObjs.add(new PlayerScoreboardsObj(player, isUpdatable.get(), newLines));
-                        updatable = isUpdatable.get();
-                    } catch (IOException exception) {
-                        exception.printStackTrace();
-                    }
-                    if ( !updatable ) {
-                        cancel();
-                    }
-
-                    if (!e.getPlayer().isOnline()){
-                        playerScoreboardsObjs.remove(playerObj);
-                        cancel();
-                    }
-                }
-            }.runTaskTimer(plugin,0L, 20*plugin.getConfig().getLong("scoreboard-refresh-rate"));
-        }
+        showScoreboard(player);
     }
 
-    private String getLine(String unformattedText, String align, int maxSize, Player player) {
+    public static void showScoreboard(Player player ) {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                boolean set = playerScoreboardsObjs.stream().anyMatch(playerScoreboardsObj -> playerScoreboardsObj.getPlayer() == player);
+                boolean updatable = false;
+                PlayerScoreboardsObj playerObj = null;
+                if (set) {
+                    updatable = playerScoreboardsObjs.stream().anyMatch(playerScoreboardsObj -> playerScoreboardsObj.getPlayer() == player && playerScoreboardsObj.isUpdatable());
+                    playerObj = playerScoreboardsObjs.stream().filter(playerScoreboardsObj -> player.equals(playerScoreboardsObj.getPlayer())).findFirst().orElse(null);
+                }
+                List<String> newLines = new ArrayList<>();
+                Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
+
+                Objective obj = scoreboard.registerNewObjective("scoreboard","dummy", plugin.getConfig().getString("scoreboard-title").replaceAll("&","§"));
+                obj.setDisplaySlot(DisplaySlot.SIDEBAR);
+                AtomicBoolean isUpdatable = new AtomicBoolean(false);
+                AtomicBoolean update = new AtomicBoolean(false);
+                try {
+                    Reader reader = Files.newBufferedReader(Paths.get(plugin.getDataFolder().toString(),"Scoreboards", plugin.getConfig().getString("scoreboard-file") + ".json"));
+
+                    List<ScoreboardObj> scoreboardObjList = new Gson().fromJson(reader, new TypeToken<List<ScoreboardObj>>() {}.getType());
+
+                    if (scoreboardObjList.size() == 16) sendConsole(ChatColor.RED + "Max lines of 16 reached");
+                    boolean finalUpdatable = updatable;
+                    PlayerScoreboardsObj finalPlayerObj = playerObj;
+                    scoreboardObjList.forEach(scoreboardObj -> {
+                        if (scoreboardObj.getText().equals("")) {
+                            String text = StringUtils.repeat(" ",scoreboardObjList.indexOf(scoreboardObj));
+                            obj.getScore(text).setScore(scoreboardObjList.size() - scoreboardObjList.indexOf(scoreboardObj) - 1);
+                            newLines.add(text);
+
+                        } else {
+                            String text = scoreboardObj.getText();
+                            int maxSize = plugin.getConfig().getInt("scoreboard-size");
+
+                            String line = getLine(text, scoreboardObj.getAlign(), maxSize, player);
+                            newLines.add(line);
+                            if(text.contains("{money}") || text.contains("{onlineplayers}") || text.contains("{maxplayers}") || text.contains("{X}") || text.contains("{Y}") || text.contains("{Z}")) {
+                                isUpdatable.set(true);
+                            }
+                            if(finalUpdatable) { if(!line.equals(finalPlayerObj.getLines().get(scoreboardObjList.indexOf(scoreboardObj))))
+                                update.set(true);
+                            }
+                            obj.getScore(line).setScore(scoreboardObjList.size() - scoreboardObjList.indexOf(scoreboardObj) - 1);
+
+                        }
+                    });
+
+                    if (set && updatable && update.get()) player.setScoreboard(scoreboard);
+                    if (!set) player.setScoreboard(scoreboard);
+                    reader.close();
+                    if(!set) playerScoreboardsObjs.add(new PlayerScoreboardsObj(player, isUpdatable.get(), newLines, getTaskId(), scoreboard));
+                    updatable = isUpdatable.get();
+                } catch (IOException exception) {
+                    exception.printStackTrace();
+                }
+                if ( !updatable ) {
+                    cancel();
+                }
+
+                if (!player.isOnline()){
+                    playerScoreboardsObjs.remove(playerObj);
+                    cancel();
+                }
+            }
+        }.runTaskTimer(plugin,0L, 20*plugin.getConfig().getLong("scoreboard-refresh-rate"));
+    }
+
+    private static String getLine(String unformattedText, String align, int maxSize, Player player) {
         StringBuilder stringBuilder = new StringBuilder();
         String text = unformattedText
                 .replaceAll("\\{onlineplayers}", String.valueOf(plugin.getServer().getOnlinePlayers().size()))
                 .replaceAll("\\{maxplayers}", String.valueOf(plugin.getServer().getMaxPlayers()))
-                .replaceAll("\\{displayname}", player.getDisplayName() );
+                .replaceAll("\\{displayname}", player.getDisplayName() )
+                .replaceAll("\\{X}", String.valueOf(player.getLocation().getX()))
+                .replaceAll("\\{Y}", String.valueOf(player.getLocation().getY()))
+                .replaceAll("\\{Z}", String.valueOf(player.getLocation().getZ()));
         if ( Main.isEconomyOn() ) {
             text = text.replaceAll("\\{money}",String.valueOf(Math.round(Main.getEconomy().getBalance(player) * 100.0) / 100.0));
         } else {
@@ -155,7 +155,7 @@ public class playerJoin implements Listener {
         return stringBuilder.toString();
     }
 
-    private void sendConsole(String message) {
+    private static void sendConsole(String message) {
         plugin.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "[CustomScoreboards] "+ ChatColor.AQUA + message);
     }
 }
