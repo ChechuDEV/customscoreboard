@@ -1,14 +1,6 @@
 package dev.darkdragon.customscoreboard.Objects;
 
 public class ScoreboardObj {
-    @Override
-    public String toString() {
-        return "{" +
-                "text='" + text + '\'' +
-                ", align='" + align + '\'' +
-                '}';
-    }
-
     private String text;
     private String align;
 
