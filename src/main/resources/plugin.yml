@@ -1,0 +1,35 @@
+name: CustomScoreboard
+main: dev.chechu.customscoreboard.Main
+version: 2.0-SNAPSHOT
+softdepend: [Vault]
+load: POSTWORLD
+prefix: CustomScoreboard
+api-version: "1.13"
+author: DarkDragon
+description: This plugin allows you to set custom scoreboards
+commands:
+  scoreboard:
+    description: The core command of Custom Scoreboard
+    usage: /scoreboard
+    permission: customscoreboard
+permissions:
+  customscoreboard:
+    description: Allows to use help and info
+    default: true
+  customscoreboard.hide:
+    description: Allows to hide and unhide the scoreboard
+    default: true
+    children:
+      customscoreboard: true
+  customscoreboard.reload:
+    description: Allows to reload plugin's configuration and all users scoreboard
+    default: op
+    children:
+      customscoreboard: true
+  customscoreboard.*:
+    description: Allows to use all commands
+    default: op
+    children:
+      customscoreboard: true
+      customscoreboard.hide: true
+      customscoreboard.reload: true
