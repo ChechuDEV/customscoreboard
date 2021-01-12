@@ -25,4 +25,4 @@ jobs:
     - name: Download artifact
       uses: actions/download-artifact@v2
       with:
-        name: CustomScoreboard-2.0-SNAPSHOT.jar
+        path: /home/runner/work/customscoreboard/customscoreboard/target/
