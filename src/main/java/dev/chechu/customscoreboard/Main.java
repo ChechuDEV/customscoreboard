@@ -4,6 +4,7 @@ import dev.chechu.customscoreboard.events.ScoreboardListener;
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -11,19 +12,16 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.util.List;
 import java.util.logging.Logger;
 
 public class Main extends JavaPlugin {
     private Logger log;
     private Economy econ;
     private Chat chat;
-    private static boolean economyOn = true;
-    private static boolean chatOn = true;
-    private static Economy economy;
-    private static Chat sChat;
-    private static List<String> scoreboardLines;
-    private static boolean updateOnJoin = false;
+
+    private static Plugin plugin;
+
+    public static ScoreboardData scoreboardData;
 
     @Override
     public void onEnable() {
@@ -42,31 +40,34 @@ public class Main extends JavaPlugin {
             }
         }
 
-        scoreboardLines = getConfig().getStringList("scoreboard-lines");
+        scoreboardData.setScoreboard(getConfig().getStringList("scoreboard-lines"));
 
-        for (String scoreboardLine : scoreboardLines) {
-            if (scoreboardLine.contains("{online}")) {
-                updateOnJoin = true;
+        for (String s : scoreboardData.getScoreboard()) {
+            if ( !scoreboardData.hasXyzTag() ) {
+                scoreboardData.setXyzTag(s.contains("{x}") || s.contains("{y}") || s.contains("{z}"));
+            }
+            if ( !scoreboardData.hasMembersTag() ) {
+                scoreboardData.setMembersTag(s.contains("{online}"));
+            }
+            if (!scoreboardData.hasMoneyTag() ) {
+                scoreboardData.setMoneyTag(s.contains("{money}"));
             }
         }
+
         // VAULT SETUP
         if ( vaultSetup() ) {
 
             // VAULT ECONOMY SETUP
-            if (!economySetup()) {
-                log.warning("Can't hook up with Economy. Perhaps an economy plugin is missing.");
-                economyOn = false;
-            }
+            if (!economySetup()) log.warning("Can't hook up with Economy. Perhaps an economy plugin is missing.");
 
             // VAULT CHAT SETUP
-            if (!chatSetup()) {
-                log.warning("Can't hook up with any Chat plugin.");
-                chatOn = false;
-            }
+            if (!chatSetup()) log.warning("Can't hook up with any Chat plugin.");
 
         } else log.warning("Vault not detected, can't hook up.");
 
-        getServer().getPluginManager().registerEvents(new ScoreboardListener(this), this);
+        getServer().getPluginManager().registerEvents(new ScoreboardListener(), this);
+
+        plugin = this;
 
         super.onEnable();
     }
@@ -91,7 +92,7 @@ public class Main extends JavaPlugin {
             return false;
         }
         econ = rsp.getProvider();
-        economy = econ;
+        scoreboardData.setEconomy(econ);
         return econ != null;
     }
 
@@ -101,32 +102,11 @@ public class Main extends JavaPlugin {
             return false;
         }
         chat = rsp.getProvider();
-        sChat = chat;
+        scoreboardData.setChat(chat);
         return chat != null;
     }
 
-    public static Economy getEconomy() {
-        return economy;
+    public static Plugin getPlugin() {
+        return plugin;
     }
-
-    public static Chat getChat() {
-        return sChat;
-    }
-
-    public static boolean isEconomyOn() {
-        return economyOn;
-    }
-
-    public static boolean isChatOn() {
-        return chatOn;
-    }
-
-    public static boolean updateOnJoin() {
-        return updateOnJoin;
-    }
-
-    public static List<String> getScoreboardLines() {
-        return scoreboardLines;
-    }
-
 }
