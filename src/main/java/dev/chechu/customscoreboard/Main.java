@@ -28,6 +28,7 @@ public class Main extends JavaPlugin {
         log = getLogger();
         log.info("Remember to rate and share this plugin. You can also join my discord server: discord.darkdragon.dev");
 
+        scoreboardData = new ScoreboardData();
         // CONFIG FILE CHECKING AND CREATION
         File config = new File(getDataFolder(),"config.yml");
         InputStream configIS = getResource("config.yml");
@@ -40,18 +41,14 @@ public class Main extends JavaPlugin {
             }
         }
 
+        getConfig().getStringList("scoreboard-lines").forEach(s -> log.info(s));
+
         scoreboardData.setScoreboard(getConfig().getStringList("scoreboard-lines"));
 
         for (String s : scoreboardData.getScoreboard()) {
-            if ( !scoreboardData.hasXyzTag() ) {
-                scoreboardData.setXyzTag(s.contains("{x}") || s.contains("{y}") || s.contains("{z}"));
-            }
-            if ( !scoreboardData.hasMembersTag() ) {
-                scoreboardData.setMembersTag(s.contains("{online}"));
-            }
-            if (!scoreboardData.hasMoneyTag() ) {
-                scoreboardData.setMoneyTag(s.contains("{money}"));
-            }
+            if ( s.contains("{x}") || s.contains("{y}") || s.contains("{z}") ) scoreboardData.setXyzTag(true);
+            if ( s.contains("{online}") ) scoreboardData.setMembersTag(true);
+            if (s.contains("{money}")) scoreboardData.setMoneyTag(true);
         }
 
         // VAULT SETUP
