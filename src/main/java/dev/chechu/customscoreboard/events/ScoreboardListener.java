@@ -32,7 +32,7 @@ public class ScoreboardListener implements Listener {
 
         CustomBoard board = new CustomBoard(event.getPlayer());
         board.setLines(Main.scoreboardData.getScoreboard());
-        board.setTitle(Objects.requireNonNull(Main.getPlugin().getConfig().getString("scoreboard-name")));
+        board.setTitle(Objects.requireNonNull(Main.getPlugin().getConfig().getString("scoreboard-title"), "title"));
         if ( Main.scoreboardData.hasMoneyTag() && !Main.scoreboardData.hasXyzTag() ) {
             board.startSchedule(100);
         } else if ( Main.scoreboardData.hasXyzTag() ) {
