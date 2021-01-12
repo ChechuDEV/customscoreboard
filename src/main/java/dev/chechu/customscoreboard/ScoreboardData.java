@@ -22,6 +22,15 @@ public class ScoreboardData {
         this.chat = chat;
     }
 
+    public ScoreboardData() {
+        this.moneyTag = false;
+        this.xyzTag = false;
+        this.membersTag = false;
+        this.scoreboard = null;
+        this.economy = null;
+        this.chat = null;
+    }
+
     public boolean hasMoneyTag() {
         return moneyTag;
     }
