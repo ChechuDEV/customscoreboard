@@ -27,15 +27,14 @@ public class CustomBoard {
 
     public void setLines(String... args) {
         List<String> lines = Arrays.asList(args);
-        for (String line : lines) {
-            setLine(lines.size() - lines.indexOf(line), line);
+        for (int i = 0; i < lines.size(); i++) {
+            setLine(lines.size() - i, lines.get(i));
         }
-
     }
 
     public void setLines(List<String> lines) {
-        for (String line : lines) {
-            setLine(lines.size() - lines.indexOf(line), line);
+        for (int i = 0; i < lines.size(); i++) {
+            setLine(lines.size() - i, lines.get(i));
         }
     }
 
@@ -52,6 +51,7 @@ public class CustomBoard {
 
         if ( Main.scoreboardData.isEconomyOn() ) text = text.replaceAll("\\{money}", String.valueOf(Math.round(Main.scoreboardData.getEconomy().getBalance(player) * 100.0) / 100.0));
         if ( Main.scoreboardData.isChatOn() ) text = text.replaceAll("\\{prefix}", Main.scoreboardData.getChat().getPlayerPrefix(player)).replaceAll("\\{suffix}", Main.scoreboardData.getChat().getPlayerSuffix(player));
+        if ( text.isEmpty() || text.equals("") || text.equals(" ")) text = StringUtils.repeat(" ", line);
 
         int randomTeam = (int) (Math.random() * ((99999 - 1)+1)) - 1;
         Team team = scoreboard.registerNewTeam("team" + randomTeam);
@@ -64,7 +64,7 @@ public class CustomBoard {
     }
 
     public void setTitle(String title) {
-        objective.setDisplayName(title);
+        objective.setDisplayName(title.replaceAll("&","§"));
     }
 
     public void setScoreboard() {
