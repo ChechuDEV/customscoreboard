@@ -17,10 +17,11 @@ public class CustomBoard {
     private Player player;
     private int taskID = 0;
     ArrayList<RandomColor> randomColors = new ArrayList<>();
+    List<String> rawScoreboard = new ArrayList<>();
 
     public CustomBoard(Player player) {
         this.player = Objects.requireNonNull(player, "player");
-        scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
+        scoreboard = Objects.requireNonNull(Bukkit.getScoreboardManager()).getNewScoreboard();
         objective = scoreboard.registerNewObjective("scoreboard","dummy", " ");
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
     }
@@ -33,6 +34,7 @@ public class CustomBoard {
     }
 
     public void setLines(List<String> lines) {
+        rawScoreboard = lines;
         for (int i = 0; i < lines.size(); i++) {
             setLine(lines.size() - i, lines.get(i));
         }
@@ -51,7 +53,7 @@ public class CustomBoard {
 
         if ( Main.scoreboardData.isEconomyOn() ) text = text.replaceAll("\\{money}", String.valueOf(Math.round(Main.scoreboardData.getEconomy().getBalance(player) * 100.0) / 100.0));
         if ( Main.scoreboardData.isChatOn() ) text = text.replaceAll("\\{prefix}", Main.scoreboardData.getChat().getPlayerPrefix(player)).replaceAll("\\{suffix}", Main.scoreboardData.getChat().getPlayerSuffix(player));
-        if ( text.isEmpty() || text.equals("") || text.equals(" ")) text = StringUtils.repeat(" ", line);
+        if (text.isEmpty() || text.equals(" ")) text = StringUtils.repeat(" ", line);
 
         int randomTeam = (int) (Math.random() * ((99999 - 1)+1)) - 1;
         Team team = scoreboard.registerNewTeam("team" + randomTeam);
@@ -78,6 +80,7 @@ public class CustomBoard {
                 if ( !player.isOnline() ) {
                     this.cancel();
                 }
+                setLines(rawScoreboard);
                 setScoreboard();
                 taskID = this.getTaskId();
             }
