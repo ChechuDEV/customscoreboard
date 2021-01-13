@@ -135,7 +135,7 @@ public class CustomBoard {
         player.setScoreboard(Objects.requireNonNull(Bukkit.getScoreboardManager()).getNewScoreboard());
     }
 
-    public void unHideScoreboard() {
+    public void showScoreboard() {
         setScoreboard();
         if ( killTask ) startSchedule(taskTicks);
     }
