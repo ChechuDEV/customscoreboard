@@ -18,6 +18,7 @@ public class CustomBoard {
     private int taskID = 0;
     ArrayList<RandomColor> randomColors = new ArrayList<>();
     List<String> rawScoreboard = new ArrayList<>();
+    List<String> teamIds = new ArrayList<>();
 
     public CustomBoard(Player player) {
         this.player = Objects.requireNonNull(player, "player");
@@ -41,7 +42,29 @@ public class CustomBoard {
     }
 
     public void setLine(int line, String arg) {
-        String text = arg.replaceAll("&","§")
+        int randomTeam = (int) (Math.random() * ((99999 - 1)+1)) - 1;
+        Team team = scoreboard.registerNewTeam("team" + randomTeam);
+        teamIds.add(team.getName());
+        RandomColor randomColor = getRandomColors();
+
+        // TODO: SIZE AND FIX LINE NUMBER
+        team.addEntry(randomColor.getFirstColor() + "" + randomColor.getSecondColor());
+        team.setPrefix(getText(arg));
+        objective.getScore(randomColor.getFirstColor() + "" + randomColor.getSecondColor()).setScore(line-1);
+    }
+
+    public void updateLines(List<String> lines) {
+        for (int i = 0; i < lines.size(); i++) {
+            updateLine(i, lines.get(i));
+        }
+    }
+
+    public void updateLine(int teamLine, String args) {
+        Objects.requireNonNull(scoreboard.getTeam(teamIds.get(teamLine)), "Team").setPrefix(getText(args));
+    }
+
+    public String getText(String line) {
+        String text = line.replaceAll("&","§")
                 .replaceAll("\\{online}",String.valueOf(ScoreboardListener.getOnlinePlayers()))
                 .replaceAll("\\{x}", String.valueOf(player.getLocation().getBlockX()))
                 .replaceAll("\\{y}", String.valueOf(player.getLocation().getBlockY()))
@@ -53,16 +76,8 @@ public class CustomBoard {
 
         if ( Main.scoreboardData.isEconomyOn() ) text = text.replaceAll("\\{money}", String.valueOf(Math.round(Main.scoreboardData.getEconomy().getBalance(player) * 100.0) / 100.0));
         if ( Main.scoreboardData.isChatOn() ) text = text.replaceAll("\\{prefix}", Main.scoreboardData.getChat().getPlayerPrefix(player)).replaceAll("\\{suffix}", Main.scoreboardData.getChat().getPlayerSuffix(player));
-        if (text.isEmpty() || text.equals(" ")) text = StringUtils.repeat(" ", line);
 
-        int randomTeam = (int) (Math.random() * ((99999 - 1)+1)) - 1;
-        Team team = scoreboard.registerNewTeam("team" + randomTeam);
-        RandomColor randomColor = getRandomColors();
-
-        // TODO: SIZE AND FIX LINE NUMBER
-        team.addEntry(randomColor.getFirstColor() + "" + randomColor.getSecondColor());
-        team.setPrefix(text);
-        objective.getScore(randomColor.getFirstColor() + "" + randomColor.getSecondColor()).setScore(line-1);
+        return text;
     }
 
     public void setTitle(String title) {
@@ -80,7 +95,7 @@ public class CustomBoard {
                 if ( !player.isOnline() ) {
                     this.cancel();
                 }
-                setLines(rawScoreboard);
+                updateLines(rawScoreboard);
                 setScoreboard();
                 taskID = this.getTaskId();
             }
