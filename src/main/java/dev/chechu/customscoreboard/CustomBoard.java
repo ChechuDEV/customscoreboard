@@ -15,7 +15,8 @@ public class CustomBoard {
     private final Scoreboard scoreboard;
     private final Objective objective;
     private Player player;
-    private int taskID = 0;
+    private boolean killTask = false;
+    private int taskTicks = 0;
     ArrayList<RandomColor> randomColors = new ArrayList<>();
     List<String> rawScoreboard = new ArrayList<>();
     List<String> teamIds = new ArrayList<>();
@@ -25,13 +26,6 @@ public class CustomBoard {
         scoreboard = Objects.requireNonNull(Bukkit.getScoreboardManager()).getNewScoreboard();
         objective = scoreboard.registerNewObjective("scoreboard","dummy", " ");
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-    }
-
-    public void setLines(String... args) {
-        List<String> lines = Arrays.asList(args);
-        for (int i = 0; i < lines.size(); i++) {
-            setLine(lines.size() - i, lines.get(i));
-        }
     }
 
     public void setLines(List<String> lines) {
@@ -47,7 +41,7 @@ public class CustomBoard {
         teamIds.add(team.getName());
         RandomColor randomColor = getRandomColors();
 
-        // TODO: SIZE AND FIX LINE NUMBER
+        // TODO: SIZE
         team.addEntry(randomColor.getFirstColor() + "" + randomColor.getSecondColor());
         team.setPrefix(getText(arg));
         objective.getScore(randomColor.getFirstColor() + "" + randomColor.getSecondColor()).setScore(line-1);
@@ -89,25 +83,23 @@ public class CustomBoard {
     }
 
     public void startSchedule(int ticks) {
+        taskTicks = ticks;
+        killTask = false;
         new BukkitRunnable() {
             @Override
             public void run() {
-                if ( !player.isOnline() ) {
+                if ( !player.isOnline() || killTask) {
                     this.cancel();
+                    return;
                 }
                 updateLines(rawScoreboard);
                 setScoreboard();
-                taskID = this.getTaskId();
             }
         }.runTaskTimer(Main.getPlugin(), 0, ticks);
     }
 
     public void stopSchedule() {
-        Bukkit.getScheduler().cancelTask(taskID);
-    }
-
-    public boolean hasSchedule() {
-        return (taskID != 0);
+        killTask = true;
     }
 
     public Player getPlayer() {
@@ -136,5 +128,15 @@ public class CustomBoard {
             Main.getPlugin().getLogger().severe("There was an error randomizing teams, Scoreboard may not show properly.");
             return new RandomColor(ChatColor.DARK_PURPLE, ChatColor.YELLOW);
         }
+    }
+
+    public void hideScoreboard() {
+        stopSchedule();
+        player.setScoreboard(Objects.requireNonNull(Bukkit.getScoreboardManager()).getNewScoreboard());
+    }
+
+    public void unHideScoreboard() {
+        setScoreboard();
+        if ( killTask ) startSchedule(taskTicks);
     }
 }
