@@ -3,6 +3,7 @@ package dev.chechu.customscoreboard;
 import dev.chechu.customscoreboard.events.ScoreboardListener;
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -65,6 +66,14 @@ public class Main extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new ScoreboardListener(), this);
 
         plugin = this;
+
+        if ( getConfig().getBoolean("metrics")) {
+            log.info("Enabling BStats Metrics");
+            Metrics metrics = new Metrics(this, 9996);
+            if (metrics.isEnabled() ) log.info("Metrics enabled");
+            else log.warning("Metrics can't be enabled");
+        }
+
 
         super.onEnable();
     }
