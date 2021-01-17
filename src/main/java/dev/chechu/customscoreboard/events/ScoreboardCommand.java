@@ -98,13 +98,18 @@ public class ScoreboardCommand implements CommandExecutor, TabCompleter {
     }
 
     private void help(Player player) {
-        player.sendMessage(ChatColor.DARK_GREEN + "[CustomScoreboard] " + ChatColor.GOLD + "Showing help");
-        player.sendMessage(ChatColor.AQUA + "W.I.P. :(");
+        player.sendMessage(ChatColor.DARK_GREEN + "[CustomScoreboard] " + ChatColor.GOLD + "Help");
+        player.sendMessage(ChatColor.GREEN + "/scoreboard help" + ChatColor.LIGHT_PURPLE + " - " + ChatColor.YELLOW + "Shows you this message with help.");
+        player.sendMessage(ChatColor.GREEN + "/scoreboard info" + ChatColor.LIGHT_PURPLE + " - " + ChatColor.YELLOW + "Shows you information of this plugin.");
+        if ( player.hasPermission("customscoreboard.hide"))
+            player.sendMessage(ChatColor.GREEN + "/scoreboard hide/show" + ChatColor.LIGHT_PURPLE + " - " + ChatColor.YELLOW + "Hides or shows the scoreboard");
+        if ( player.hasPermission("customscoreboard.reload"))
+            player.sendMessage(ChatColor.GREEN + "/scoreboard reload" + ChatColor.LIGHT_PURPLE + " - " + ChatColor.YELLOW + "Reloads the plugin");
     }
 
     private void info(Player player) {
         player.sendMessage("");
-        player.sendMessage(ChatColor.DARK_GREEN + "[CustomScoreboard] " + ChatColor.GOLD + "Allows you to set Custom Scoreboards on your server. " + ChatColor.RED + "Made by (ME). " + ChatColor.GOLD + "Get it on " + ChatColor.BLUE + "" + ChatColor.UNDERLINE + "(my domain name is still being thought about)");
+        player.sendMessage(ChatColor.DARK_GREEN + "[CustomScoreboard] " + ChatColor.GOLD + "Allows you to set Custom Scoreboards on your server. " + ChatColor.RED + "Made by DarkDragon. " + ChatColor.GOLD + "Get it in " + ChatColor.BLUE + "" + ChatColor.UNDERLINE + "spigotmc.org/resources/custom-scoreboard.87154");
         player.sendMessage("");
     }
 
