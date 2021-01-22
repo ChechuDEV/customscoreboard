@@ -1,6 +1,6 @@
 name: CustomScoreboard
 main: dev.chechu.customscoreboard.Main
-version: 1.0
+version: 1.0.1
 softdepend: [Vault]
 load: POSTWORLD
 prefix: CustomScoreboard

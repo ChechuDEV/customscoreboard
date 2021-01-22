@@ -38,7 +38,7 @@ public class ScoreboardListener implements Listener {
         if ( Main.scoreboardData.hasMembersTag() )
             if ( !Main.boards.isEmpty() ){
                 for (CustomBoard customBoard : Main.boards) {
-                    customBoard.setLines(Main.scoreboardData.getScoreboard());
+                    customBoard.updateLines(Main.scoreboardData.getScoreboard());
                     customBoard.setScoreboard();
                 }
             }
